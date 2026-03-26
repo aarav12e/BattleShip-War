@@ -1,0 +1,71 @@
+.fleet-panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 180px;
+}
+
+.fleet-title {
+  font-family: var(--font-hud);
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  color: var(--green);
+  text-shadow: var(--glow);
+  text-align: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.fleet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fleet-ship {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+.fleet-alive {
+  border-color: var(--green-dark);
+  background: #001a00;
+}
+.fleet-sunk {
+  border-color: #330000;
+  background: #0d0000;
+  opacity: 0.6;
+}
+
+.fleet-ship-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.fleet-symbol { font-size: 1.2rem; line-height: 1; }
+.fleet-ship-name {
+  font-family: var(--font-hud);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--text);
+}
+.fleet-ship-size {
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  margin-top: 0.1rem;
+}
+
+.fleet-status {
+  font-family: var(--font-hud);
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+.status-ok   { color: var(--green); text-shadow: var(--glow); }
+.status-sunk { color: var(--red); text-shadow: var(--glow-red); }

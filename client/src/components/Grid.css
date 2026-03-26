@@ -1,0 +1,133 @@
+.grid-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  user-select: none;
+}
+
+.grid-label {
+  font-family: var(--font-hud);
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: var(--green);
+  text-transform: uppercase;
+  text-shadow: var(--glow);
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 28px repeat(14, 1fr);
+  grid-template-rows:    28px repeat(13, 1fr);
+  gap: 2px;
+  background: #001a00;
+  border: 2px solid var(--green-dim);
+  box-shadow: 0 0 20px #00ff4122, inset 0 0 30px #00000088;
+  padding: 3px;
+}
+
+.grid-corner,
+.grid-col-header,
+.grid-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-hud);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--green);
+  text-shadow: 0 0 6px var(--green);
+  letter-spacing: 0.05em;
+}
+
+/* ── Cell base ──────────────────────────────────────────────────── */
+.grid-cell {
+  width: 100%;
+  aspect-ratio: 1;
+  min-width: 28px;
+  min-height: 28px;
+  background: #001500;
+  border: 1px solid #00ff4122;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  transition: background 0.1s, border-color 0.1s;
+  position: relative;
+}
+
+/* ── Clickable ──────────────────────────────────────────────────── */
+.cell-clickable {
+  cursor: crosshair;
+}
+.cell-clickable:hover {
+  background: #00ff4122;
+  border-color: var(--green);
+  box-shadow: inset 0 0 8px #00ff4133;
+}
+
+/* ── Ship placed (own board) ────────────────────────────────────── */
+.cell-ship {
+  background: #003300;
+  border-color: var(--green-dim);
+}
+
+/* ── Hit ────────────────────────────────────────────────────────── */
+.cell-hit {
+  background: #330000;
+  border-color: var(--red-dim);
+  animation: explode 0.3s ease;
+}
+.cell-icon {
+  color: var(--red);
+  font-size: 0.9rem;
+  font-weight: 900;
+  text-shadow: var(--glow-red);
+  line-height: 1;
+}
+
+/* ── Sunk ship ──────────────────────────────────────────────────── */
+.cell-sunk {
+  background: #1a0000;
+  border-color: #660000;
+}
+.cell-sunk .cell-icon {
+  color: #cc0000;
+}
+
+/* ── Miss ────────────────────────────────────────────────────────── */
+.cell-miss {
+  background: #001520;
+  border-color: #004466;
+}
+.cell-dot {
+  color: #006688;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+/* ── Placement preview ───────────────────────────────────────────── */
+.preview-valid {
+  background: #004400;
+  border-color: var(--green);
+  box-shadow: inset 0 0 6px #00ff4144;
+}
+.preview-invalid {
+  background: #440000;
+  border-color: var(--red-dim);
+  box-shadow: inset 0 0 6px #ff222244;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: 20px repeat(14, 1fr);
+    grid-template-rows:    20px repeat(13, 1fr);
+    gap: 1px;
+  }
+  .grid-cell { min-width: 20px; min-height: 20px; }
+  .grid-col-header,
+  .grid-row-header { font-size: 0.5rem; }
+  .cell-icon { font-size: 0.7rem; }
+}
