@@ -16,6 +16,8 @@ export default function AuthCallback() {
     }
     if (token) {
       loginWithToken(token);
+      // Set flag so Game page can speak the welcome message
+      sessionStorage.setItem('justLoggedIn', 'true');
       navigate('/');
     } else {
       navigate('/login');

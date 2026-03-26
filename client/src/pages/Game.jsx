@@ -41,6 +41,9 @@ export default function Game() {
   const [log,      setLog]      = useState([]);
   const [saving,   setSaving]   = useState(false);
   const [result,   setResult]   = useState(null);     // { won, score, ... }
+  const [showWelcome, setShowWelcome] = useState(
+    () => sessionStorage.getItem('justLoggedIn') === 'true'
+  );
 
   // ── Timers / counters ──────────────────────────────────────────
   const [turnCount,    setTurnCount]    = useState(0);
@@ -55,6 +58,20 @@ export default function Game() {
   useEffect(() => {
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
   }, [log]);
+
+  // ── Welcome overlay: dismiss + speak on click ─────────────────
+  const dismissWelcome = () => {
+    sessionStorage.removeItem('justLoggedIn');
+    setShowWelcome(false);
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const msg = new SpeechSynthesisUtterance('This game is built by Aarav Kumar');
+      msg.rate = 0.9;
+      msg.pitch = 1;
+      msg.volume = 1;
+      window.speechSynthesis.speak(msg);
+    }
+  };
 
   const addLog = (msg, type = 'info') =>
     setLog(prev => [...prev.slice(-60), { msg, type, id: Date.now() + Math.random() }]);
@@ -263,7 +280,48 @@ export default function Game() {
   return (
     <div className="game-root grid-bg">
 
+      {/* ── WELCOME OVERLAY ───────────────────────────────────── */}
+      {showWelcome && (
+        <div onClick={dismissWelcome} style={{
+          position:'fixed',inset:0,zIndex:9999,
+          background:'rgba(0,0,0,0.88)',
+          display:'flex',flexDirection:'column',
+          alignItems:'center',justifyContent:'center',
+          cursor:'pointer',
+        }}>
+          <div style={{
+            border:'2px solid #00ff41',borderRadius:'12px',
+            padding:'3rem 4rem',textAlign:'center',
+            boxShadow:'0 0 60px #00ff4155',
+            animation:'fadeInScale 0.5s ease',
+          }}>
+            <div style={{fontSize:'3rem',marginBottom:'1rem'}}>⚓</div>
+            <h1 style={{
+              fontFamily:'Orbitron,monospace',color:'#00ff41',
+              fontSize:'1.5rem',letterSpacing:'0.2em',marginBottom:'0.5rem',
+            }}>BATTLESHIP WAR</h1>
+            <p style={{
+              fontFamily:'Orbitron,monospace',color:'#aaa',
+              fontSize:'0.75rem',letterSpacing:'0.15em',marginBottom:'2rem',
+            }}>This game is built by Aarav Kumar</p>
+            <div style={{
+              background:'#00ff41',color:'#000',
+              fontFamily:'Orbitron,monospace',fontWeight:'bold',
+              padding:'0.75rem 2rem',borderRadius:'6px',
+              fontSize:'0.8rem',letterSpacing:'0.15em',
+            }}>🔊 CLICK TO ENTER</div>
+          </div>
+          <style>{`
+            @keyframes fadeInScale {
+              from { opacity:0; transform:scale(0.85); }
+              to   { opacity:1; transform:scale(1); }
+            }
+          `}</style>
+        </div>
+      )}
+
       {/* ── PLACEMENT PHASE ──────────────────────────────────── */}
+
       {phase === PHASE.PLACEMENT && (
         <div className="placement-layout fade-in">
           <div className="placement-header">
