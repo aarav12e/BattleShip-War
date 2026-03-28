@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { useAuth as useClerkAuth, useUser } from '@clerk/clerk-react';
 import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -6,44 +7,51 @@ const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user,    setUser]    = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { isSignedIn, isLoaded, getToken } = useClerkAuth();
+  const { user: clerkUser }                = useUser();
+  const [gameProfile, setGameProfile]      = useState(null);
+  const [loading, setLoading]              = useState(true);
 
-  // Verify stored token on app load
-  useEffect(() => {
-    const token = localStorage.getItem('bsw_token');
-    if (token) {
-      fetchMe(token);
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
-  const fetchMe = async (token) => {
+  const syncUser = useCallback(async () => {
     try {
-      const { data } = await axios.get(`${API}/auth/me`, {
+      setLoading(true);
+      const token = await getToken();
+      // POST /auth/sync — creates or updates user in MongoDB
+      const { data } = await axios.post(`${API}/auth/sync`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUser({ ...data, token });
-    } catch {
-      localStorage.removeItem('bsw_token');
+      setGameProfile(data);
+    } catch (err) {
+      console.error('Failed to sync user:', err);
+      setGameProfile(null);
     } finally {
       setLoading(false);
     }
-  };
+  }, [getToken]);
 
-  const loginWithToken = (token) => {
-    localStorage.setItem('bsw_token', token);
-    fetchMe(token);
-  };
+  // Whenever Clerk's auth state is ready, sync/fetch the game profile
+  useEffect(() => {
+    if (!isLoaded) return;
+    if (!isSignedIn) {
+      setGameProfile(null);
+      setLoading(false);
+      return;
+    }
+    syncUser();
+  }, [isLoaded, isSignedIn]);
 
-  const logout = () => {
-    localStorage.removeItem('bsw_token');
-    setUser(null);
-  };
+  // Combined user object: Clerk identity + game stats from MongoDB
+  const user = isSignedIn && gameProfile
+    ? {
+        ...gameProfile,
+        name:    gameProfile.name    || clerkUser?.fullName    || '',
+        email:   gameProfile.email   || clerkUser?.primaryEmailAddress?.emailAddress || '',
+        picture: gameProfile.picture || clerkUser?.imageUrl    || '',
+      }
+    : null;
 
   return (
-    <AuthContext.Provider value={{ user, loading, loginWithToken, logout, API }}>
+    <AuthContext.Provider value={{ user, loading, API, syncUser }}>
       {children}
     </AuthContext.Provider>
   );

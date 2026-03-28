@@ -1,18 +1,16 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth as useClerkAuth } from '@clerk/clerk-react';
 import { useAuth } from './context/AuthContext';
 import Login from './pages/Login';
-import AuthCallback from './pages/AuthCallback';
+import ProfileSetup from './pages/ProfileSetup';
 import Game from './pages/Game';
 import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 
-const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
-  if (loading) return <Loader />;
-  return user ? children : <Navigate to="/login" replace />;
-};
+// ── Guards ─────────────────────────────────────────────────────────────────────
 
+// Shows spinner while Clerk + AuthContext are loading
 const Loader = () => (
   <div style={{
     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -30,17 +28,53 @@ const Loader = () => (
   </div>
 );
 
+// Requires sign-in AND completed profile setup
+const ProtectedRoute = ({ children }) => {
+  const { isSignedIn, isLoaded } = useClerkAuth();
+  const { user, loading }        = useAuth();
+
+  if (!isLoaded || loading) return <Loader />;
+  if (!isSignedIn)          return <Navigate to="/login" replace />;
+  if (!user?.profileComplete) return <Navigate to="/setup-profile" replace />;
+  return children;
+};
+
+// Only for the setup page: must be signed in, but profile must NOT be complete yet
+const SetupRoute = ({ children }) => {
+  const { isSignedIn, isLoaded } = useClerkAuth();
+  const { user, loading }        = useAuth();
+
+  if (!isLoaded || loading) return <Loader />;
+  if (!isSignedIn)          return <Navigate to="/login" replace />;
+  if (user?.profileComplete)  return <Navigate to="/" replace />;
+  return children;
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function App() {
-  const { user } = useAuth();
+  const { isSignedIn }    = useClerkAuth();
+  const { user }          = useAuth();
+
+  // Only show Navbar when signed in AND profile is complete
+  const showNavbar = isSignedIn && user?.profileComplete;
+
   return (
     <>
-      {user && <Navbar />}
+      {showNavbar && <Navbar />}
       <Routes>
         <Route path="/login"         element={<Login />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
+
+        {/* Profile setup — shown exactly once on first sign-up */}
+        <Route path="/setup-profile" element={
+          <SetupRoute><ProfileSetup /></SetupRoute>
+        } />
+
+        {/* Protected game routes */}
         <Route path="/"              element={<ProtectedRoute><Game /></ProtectedRoute>} />
         <Route path="/leaderboard"   element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
         <Route path="/profile"       element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+
         <Route path="*"              element={<Navigate to="/" replace />} />
       </Routes>
     </>

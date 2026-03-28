@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useAuth as useClerkAuth } from '@clerk/clerk-react';
 import { useAuth } from '../context/AuthContext';
 import './Profile.css';
 
 export default function Profile() {
   const { user, API }   = useAuth();
+  const { getToken }    = useClerkAuth();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('bsw_token');
-    axios.get(`${API}/game/history`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => setHistory(r.data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    getToken().then(token => {
+      axios.get(`${API}/game/history`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => setHistory(r.data))
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    });
   }, []);
 
   const winRate = user?.gamesPlayed
@@ -31,7 +34,22 @@ export default function Profile() {
         <div className="profile-info">
           <h2 className="profile-name glow">{user?.name}</h2>
           <p className="profile-email">{user?.email}</p>
-          <span className="profile-badge">NAVAL COMMANDER</span>
+          {user?.username && (
+            <p className="profile-email" style={{ color: '#00ff41bb' }}>@{user.username}</p>
+          )}
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
+            {user?.age && (
+              <span className="profile-badge" style={{ background: 'rgba(0,255,65,0.08)' }}>
+                📅 AGE {user.age}
+              </span>
+            )}
+            {user?.gender && (
+              <span className="profile-badge" style={{ background: 'rgba(0,255,65,0.08)' }}>
+                {user.gender === 'male' ? '♂ MALE' : user.gender === 'female' ? '♀ FEMALE' : '◈ OTHER'}
+              </span>
+            )}
+            <span className="profile-badge">NAVAL COMMANDER</span>
+          </div>
         </div>
       </div>
 

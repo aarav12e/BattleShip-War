@@ -1,10 +1,14 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useClerk } from '@clerk/clerk-react';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user }         = useAuth();
+  const { signOut }      = useClerk();
   const { pathname }     = useLocation();
+
+  const handleLogout = () => signOut({ redirectUrl: '/login' });
 
   return (
     <nav className="navbar">
@@ -22,7 +26,7 @@ export default function Navbar() {
       <div className="navbar-user">
         {user?.picture && <img src={user.picture} alt="" className="navbar-avatar" />}
         <span className="navbar-username">{user?.name?.split(' ')[0]}</span>
-        <button className="btn btn-danger navbar-logout" onClick={logout}>LOGOUT</button>
+        <button className="btn btn-danger navbar-logout" onClick={handleLogout}>LOGOUT</button>
       </div>
     </nav>
   );
