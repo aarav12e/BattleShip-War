@@ -1,22 +1,20 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useAuth as useClerkAuth } from '@clerk/clerk-react';
+
 import { useAuth } from '../context/AuthContext';
 import './Profile.css';
 
 export default function Profile() {
   const { user, API }   = useAuth();
-  const { getToken }    = useClerkAuth();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getToken().then(token => {
-      axios.get(`${API}/game/history`, { headers: { Authorization: `Bearer ${token}` } })
-        .then(r => setHistory(r.data))
-        .catch(() => {})
-        .finally(() => setLoading(false));
-    });
+    const token = localStorage.getItem('token');
+    axios.get(`${API}/game/history`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => setHistory(r.data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const winRate = user?.gamesPlayed

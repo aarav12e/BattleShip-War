@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { useAuth as useClerkAuth, useUser } from '@clerk/clerk-react';
 import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -7,51 +6,75 @@ const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const { isSignedIn, isLoaded, getToken } = useClerkAuth();
-  const { user: clerkUser }                = useUser();
-  const [gameProfile, setGameProfile]      = useState(null);
-  const [loading, setLoading]              = useState(true);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const syncUser = useCallback(async () => {
+  const login = useCallback(async (email, password) => {
     try {
-      setLoading(true);
-      const token = await getToken();
-      // POST /auth/sync — creates or updates user in MongoDB
-      const { data } = await axios.post(`${API}/auth/sync`, {}, {
+      const { data } = await axios.post(`${API}/auth/login`, { email, password });
+      localStorage.setItem('token', data.token);
+      setUser(data.user);
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: err.response?.data?.error || 'Login failed' };
+    }
+  }, []);
+
+  const signup = useCallback(async (username, email, password) => {
+    try {
+      const { data } = await axios.post(`${API}/auth/signup`, { username, email, password });
+      localStorage.setItem('token', data.token);
+      setUser(data.user);
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: err.response?.data?.error || 'Signup failed' };
+    }
+  }, []);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem('token');
+    setUser(null);
+  }, []);
+
+  const updateProfile = useCallback(async (profileData) => {
+    try {
+      const token = localStorage.getItem('token');
+      const { data } = await axios.patch(`${API}/auth/profile`, profileData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setGameProfile(data);
+      setUser(data);
+      return { success: true };
     } catch (err) {
-      console.error('Failed to sync user:', err);
-      setGameProfile(null);
-    } finally {
-      setLoading(false);
+      return { success: false, error: err.response?.data?.error || 'Profile update failed' };
     }
-  }, [getToken]);
+  }, []);
 
-  // Whenever Clerk's auth state is ready, sync/fetch the game profile
-  useEffect(() => {
-    if (!isLoaded) return;
-    if (!isSignedIn) {
-      setGameProfile(null);
+  const checkAuth = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
       setLoading(false);
       return;
     }
-    syncUser();
-  }, [isLoaded, isSignedIn]);
 
-  // Combined user object: Clerk identity + game stats from MongoDB
-  const user = isSignedIn && gameProfile
-    ? {
-        ...gameProfile,
-        name:    gameProfile.name    || clerkUser?.fullName    || '',
-        email:   gameProfile.email   || clerkUser?.primaryEmailAddress?.emailAddress || '',
-        picture: gameProfile.picture || clerkUser?.imageUrl    || '',
-      }
-    : null;
+    try {
+      const { data } = await axios.get(`${API}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser(data);
+    } catch (err) {
+      localStorage.removeItem('token');
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, API, syncUser }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout, updateProfile, API }}>
       {children}
     </AuthContext.Provider>
   );

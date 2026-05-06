@@ -1,14 +1,13 @@
-import { Link, useLocation } from 'react-router-dom';
-import { useClerk } from '@clerk/clerk-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 export default function Navbar() {
-  const { user }         = useAuth();
-  const { signOut }      = useClerk();
+  const { user, logout } = useAuth();
   const { pathname }     = useLocation();
+  const navigate         = useNavigate();
 
-  const handleLogout = () => signOut({ redirectUrl: '/login' });
+  const handleLogout = () => { logout(); navigate('/login'); };
 
   return (
     <nav className="navbar">

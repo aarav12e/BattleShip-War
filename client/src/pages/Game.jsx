@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
-import { useAuth as useClerkAuth } from '@clerk/clerk-react';
+
 import { useAuth } from '../context/AuthContext';
 import Grid from '../components/Grid';
 import Fleet from '../components/Fleet';
@@ -24,7 +24,6 @@ const INIT_PLACEMENT = () => ({
 
 export default function Game() {
   const { user, API }  = useAuth();
-  const { getToken }   = useClerkAuth();
 
   // ── Phase & placement ──────────────────────────────────────────
   const [phase,     setPhase]     = useState(PHASE.PLACEMENT);
@@ -253,11 +252,10 @@ export default function Game() {
   useEffect(() => {
     if (phase === PHASE.GAMEOVER && result && !saving) {
       setSaving(true);
-      getToken().then(token => {
-        axios.post(`${API}/game/save`, result, {
-          headers: { Authorization: `Bearer ${token}` },
-        }).catch(() => {}).finally(() => setSaving(false));
-      });
+      const token = localStorage.getItem('token');
+      axios.post(`${API}/game/save`, result, {
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => {}).finally(() => setSaving(false));
     }
   }, [phase, result]);
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useAuth as useClerkAuth } from '@clerk/clerk-react';
+
 import { useAuth } from '../context/AuthContext';
 import './Leaderboard.css';
 
@@ -8,17 +8,15 @@ const MEDALS = ['🥇', '🥈', '🥉'];
 
 export default function Leaderboard() {
   const { user, API }  = useAuth();
-  const { getToken }   = useClerkAuth();
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getToken().then(token => {
-      axios.get(`${API}/leaderboard`, { headers: { Authorization: `Bearer ${token}` } })
-        .then(r => setLeaders(r.data))
-        .catch(() => {})
-        .finally(() => setLoading(false));
-    });
+    const token = localStorage.getItem('token');
+    axios.get(`${API}/leaderboard`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => setLeaders(r.data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   return (

@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth as useClerkAuth } from '@clerk/clerk-react';
 import { useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import ProfileSetup from './pages/ProfileSetup';
@@ -10,7 +9,7 @@ import Navbar from './components/Navbar';
 
 // ── Guards ─────────────────────────────────────────────────────────────────────
 
-// Shows spinner while Clerk + AuthContext are loading
+// Shows spinner while AuthContext is loading
 const Loader = () => (
   <div style={{
     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -30,34 +29,31 @@ const Loader = () => (
 
 // Requires sign-in AND completed profile setup
 const ProtectedRoute = ({ children }) => {
-  const { isSignedIn, isLoaded } = useClerkAuth();
-  const { user, loading }        = useAuth();
+  const { user, loading } = useAuth();
 
-  if (!isLoaded || loading) return <Loader />;
-  if (!isSignedIn)          return <Navigate to="/login" replace />;
+  if (loading) return <Loader />;
+  if (!user) return <Navigate to="/login" replace />;
   if (!user?.profileComplete) return <Navigate to="/setup-profile" replace />;
   return children;
 };
 
 // Only for the setup page: must be signed in, but profile must NOT be complete yet
 const SetupRoute = ({ children }) => {
-  const { isSignedIn, isLoaded } = useClerkAuth();
-  const { user, loading }        = useAuth();
+  const { user, loading } = useAuth();
 
-  if (!isLoaded || loading) return <Loader />;
-  if (!isSignedIn)          return <Navigate to="/login" replace />;
-  if (user?.profileComplete)  return <Navigate to="/" replace />;
+  if (loading) return <Loader />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user?.profileComplete) return <Navigate to="/" replace />;
   return children;
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function App() {
-  const { isSignedIn }    = useClerkAuth();
-  const { user }          = useAuth();
+  const { user } = useAuth();
 
   // Only show Navbar when signed in AND profile is complete
-  const showNavbar = isSignedIn && user?.profileComplete;
+  const showNavbar = user?.profileComplete;
 
   return (
     <>

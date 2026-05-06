@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  clerkId:         { type: String, required: true, unique: true },
+  username:        { type: String, required: true, unique: true },
   email:           { type: String, required: true, unique: true },
-  name:            { type: String, required: true },
+  password:        { type: String, required: true },
+  name:            { type: String, default: '' },
   picture:         { type: String, default: '' },
   // Profile setup fields (filled on first sign-up)
-  username:        { type: String, default: '' },
   age:             { type: Number, default: null },
   gender:          { type: String, enum: ['male', 'female', 'other', ''], default: '' },
   profileComplete: { type: Boolean, default: false },

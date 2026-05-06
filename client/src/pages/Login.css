@@ -137,20 +137,104 @@
   color: var(--bg);
   box-shadow: var(--glow);
 }
-.login-google-btn:hover svg { filter: brightness(0); }
-
-.login-note {
-  text-align: center;
-  font-size: 0.6rem;
-  color: var(--text-dim);
-  letter-spacing: 0.08em;
+.auth-tabs {
+  display: flex;
+  margin-bottom: 1rem;
 }
 
-.login-footer {
-  text-align: center;
-  font-size: 0.55rem;
-  letter-spacing: 0.12em;
+.auth-tab {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--green-dim);
   color: var(--text-dim);
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--border);
+  font-family: var(--font-hud);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.auth-tab.active {
+  background: var(--green);
+  color: var(--bg);
+  border-color: var(--green);
+}
+
+.auth-tab:hover:not(.active) {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-family: var(--font-hud);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--green);
+  text-transform: uppercase;
+}
+
+.form-input {
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--green-dim);
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--green);
+  box-shadow: 0 0 10px #00ff4122;
+}
+
+.form-error {
+  background: #ff22221a;
+  border: 1px solid var(--red-dim);
+  color: var(--red);
+  font-size: 0.7rem;
+  padding: 0.5rem;
+  text-align: center;
+  border-radius: 2px;
+}
+
+.auth-submit-btn {
+  padding: 0.9rem 1.5rem;
+  background: var(--green);
+  border: 2px solid var(--green);
+  color: var(--bg);
+  font-family: var(--font-hud);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+  background: transparent;
+  color: var(--green);
+  box-shadow: var(--glow);
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

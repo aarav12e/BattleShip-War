@@ -1,38 +1,29 @@
 import { useState } from 'react';
-import { useAuth as useClerkAuth } from '@clerk/clerk-react';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
 import './ProfileSetup.css';
 
 export default function ProfileSetup() {
-  const { getToken }   = useClerkAuth();
-  const { API, syncUser } = useAuth();
+  const { updateProfile } = useAuth();
 
-  const [username, setUsername] = useState('');
-  const [age,      setAge]      = useState('');
-  const [gender,   setGender]   = useState('');
-  const [error,    setError]    = useState('');
-  const [loading,  setLoading]  = useState(false);
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!username.trim()) return setError('Username is required.');
     if (!age || age < 5 || age > 120) return setError('Enter a valid age (5–120).');
     if (!gender) return setError('Please select your gender.');
 
     setLoading(true);
     try {
-      const token = await getToken();
-      await axios.patch(`${API}/auth/profile`,
-        { username: username.trim(), age: Number(age), gender },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      // Re-sync so AuthContext refreshes profileComplete → true → leaves this page
-      await syncUser();
+      const result = await updateProfile({ age: Number(age), gender });
+      if (!result.success) {
+        setError(result.error);
+      }
     } catch (err) {
-      const fallbackError = `Something went wrong. API: ${API} | Error: ${err.message}`;
-      setError(err.response?.data?.error || fallbackError);
+      setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -46,7 +37,7 @@ export default function ProfileSetup() {
         <div className="setup-header">
           <div className="setup-anchor">⚓</div>
           <h1 className="setup-title glow">COMMANDER PROFILE</h1>
-          <p className="setup-sub">SET UP YOUR NAVAL IDENTITY</p>
+          <p className="setup-sub">COMPLETE YOUR NAVAL IDENTITY</p>
         </div>
 
         <div className="setup-divider">
@@ -54,25 +45,6 @@ export default function ProfileSetup() {
         </div>
 
         <form className="setup-form" onSubmit={handleSubmit} noValidate>
-
-          {/* Username */}
-          <div className="setup-field">
-            <label className="setup-label" htmlFor="setup-username">
-              🎖 CALL SIGN <span className="setup-required">*</span>
-            </label>
-            <input
-              id="setup-username"
-              className="setup-input"
-              type="text"
-              placeholder="Enter your unique username"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              maxLength={24}
-              autoComplete="off"
-              spellCheck={false}
-            />
-            <span className="setup-hint">{username.length}/24 · must be unique</span>
-          </div>
 
           {/* Age */}
           <div className="setup-field">
