@@ -1,11 +1,14 @@
+/* ── Root ────────────────────────────────────────────────────────── */
 .lb-root {
-  min-height: calc(100vh - 53px);
-  padding: 2rem 1.5rem;
+  min-height: calc(100vh - 52px);
+  padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
+
+/* ── Header ──────────────────────────────────────────────────────── */
 .lb-header { text-align: center; }
 .lb-title {
   font-family: var(--font-hud);
@@ -26,16 +29,20 @@
   letter-spacing: 0.2em;
   color: var(--green-dim);
 }
+
+/* ── Desktop table ───────────────────────────────────────────────── */
 .lb-table-wrap {
   width: 100%;
   max-width: 1000px;
   overflow-x: auto;
   border: 1px solid var(--border);
+  -webkit-overflow-scrolling: touch;
 }
 .lb-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.75rem;
+  min-width: 580px;
 }
 .lb-table thead tr {
   background: #0a1a0a;
@@ -71,7 +78,7 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  min-width: 200px;
+  min-width: 160px;
 }
 .lb-avatar {
   width: 32px; height: 32px;
@@ -85,6 +92,7 @@
   border: 1px solid var(--green-dark);
   display: flex; align-items: center; justify-content: center;
   font-size: 0.8rem; background: var(--bg2);
+  flex-shrink: 0;
 }
 .lb-name {
   font-family: var(--font-hud);
@@ -95,13 +103,13 @@
   gap: 0.4rem;
 }
 .lb-you {
-  font-size: 0.45rem;
+  font-size: 0.42rem;
   padding: 0.1rem 0.3rem;
   border: 1px solid var(--green);
   color: var(--green);
   letter-spacing: 0.1em;
 }
-.lb-email { font-size: 0.55rem; color: var(--text-dim); }
+.lb-email { font-size: 0.52rem; color: var(--text-dim); margin-top: 0.1rem; }
 
 .lb-score {
   font-family: var(--font-hud);
@@ -109,11 +117,9 @@
   color: var(--text);
   text-align: right;
 }
-.lb-score.gold  { color: var(--gold); }
+.lb-score.gold { color: var(--gold); }
 
-.lb-rate {
-  min-width: 120px;
-}
+.lb-rate { min-width: 100px; }
 .lb-bar-wrap {
   display: flex;
   align-items: center;
@@ -128,7 +134,10 @@
   box-shadow: 0 0 4px var(--green);
   min-width: 2px;
   transition: width 0.4s;
+  flex-shrink: 0;
+  max-width: 60px;
 }
+
 .lb-num {
   font-family: var(--font-hud);
   font-size: 0.7rem;
@@ -141,4 +150,180 @@
   color: var(--text-dim);
   padding: 2rem;
   font-size: 0.75rem;
+}
+
+/* ── Desktop table: ONLY on screens ≥681px ──────────────────────── */
+@media (min-width: 681px) {
+  .lb-desktop-only { display: block; width: 100%; max-width: 1000px; }
+  .lb-mobile-only  { display: none !important; }
+}
+
+/* ── Mobile cards: ONLY on screens ≤680px ───────────────────────── */
+@media (max-width: 680px) {
+  .lb-desktop-only { display: none !important; }
+  .lb-mobile-only  { display: flex; }
+}
+
+/* ── Mobile card layout ──────────────────────────────────────────── */
+.lb-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 520px;
+}
+
+.lb-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: border-color 0.15s;
+}
+.lb-card-me {
+  border-color: var(--green);
+  background: rgba(0,255,65,0.03);
+  box-shadow: 0 0 12px rgba(0,255,65,0.08);
+}
+
+/* Card header */
+.lb-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.lb-card-rank {
+  font-family: var(--font-hud);
+  font-size: 1.4rem;
+  min-width: 36px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.lb-card-num {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+.lb-card-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+  min-width: 0;
+}
+.lb-card-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--green-dark);
+  flex-shrink: 0;
+}
+.lb-card-avatar-ph {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--green-dark);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; background: var(--bg3);
+  flex-shrink: 0;
+}
+.lb-card-name {
+  font-family: var(--font-hud);
+  font-size: 0.7rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  font-weight: 700;
+}
+.lb-card-email {
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  margin-top: 0.1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px;
+}
+
+/* Card stats 2×2 grid */
+.lb-card-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0.5rem;
+}
+.lb-card-stat {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.4rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: center;
+}
+.lb-card-stat-label {
+  font-family: var(--font-hud);
+  font-size: 0.42rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+.lb-card-stat-val {
+  font-family: var(--font-hud);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.lb-card-stat-val.gold  { color: var(--gold); }
+.lb-card-stat-val.green { color: var(--green); }
+
+/* Win-rate bar */
+.lb-card-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.lb-card-bar-bg {
+  flex: 1;
+  height: 3px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.lb-card-bar-fill {
+  height: 100%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  transition: width 0.5s ease;
+}
+.lb-card-bar-label {
+  font-family: var(--font-hud);
+  font-size: 0.45rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.lb-empty-card {
+  text-align: center;
+  color: var(--text-dim);
+  padding: 2rem 1rem;
+  font-size: 0.7rem;
+  font-family: var(--font-hud);
+  border: 1px solid var(--border);
+  background: var(--bg2);
+}
+
+/* ── Mobile root padding ────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .lb-root { padding: 1rem 0.75rem; gap: 1rem; }
+}
+
+/* ── Very small: 2x2 stat grid instead of 4-col row ─────────────── */
+@media (max-width: 380px) {
+  .lb-card-stats { grid-template-columns: 1fr 1fr; }
+  .lb-card-email { max-width: 140px; }
+  .lb-card { padding: 0.75rem; }
 }

@@ -151,6 +151,272 @@
   background: rgba(0,0,0,0.88);
   display: flex; align-items: center; justify-content: center;
   backdrop-filter: blur(4px);
+  padding: 1rem;
+}
+.gameover-panel {
+  background: var(--bg2);
+  border: 2px solid var(--green-dim);
+  padding: 2.5rem 2rem;
+  max-width: 460px;
+  width: 92vw;
+  text-align: center;
+  box-shadow: 0 0 60px #00ff4115;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-items: center;
+}
+.gameover-badge {
+  font-family: var(--font-hud);
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+}
+.gameover-badge.won  { color: var(--gold); text-shadow: 0 0 20px #ffd70066; }
+.gameover-badge.lost { color: var(--red);  text-shadow: var(--glow-red); }
+.gameover-title {
+  font-family: var(--font-hud);
+  font-size: 1rem;
+  letter-spacing: 0.25em;
+}
+.gameover-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  width: 100%;
+}
+.gameover-stat { display: flex; flex-direction: column; gap: 0.2rem; align-items: center; }
+.gameover-stat-val {
+  font-family: var(--font-hud);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.gameover-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ── Mobile breakpoints ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .game-root { padding: 0.5rem; }
+
+  /* Placement: queue becomes horizontal chip row */
+  .placement-main { gap: 0.75rem; }
+  .placement-queue {
+    min-width: unset;
+    width: 100%;
+    padding: 0.6rem;
+  }
+  .placement-queue .hud-label { display: none; }
+  .queue-item {
+    display: inline-flex;
+    margin: 0 0.3rem 0.3rem 0;
+    font-size: 0.6rem;
+    padding: 0.25rem 0.4rem;
+  }
+  /* make the queue a horizontal wrapping row */
+  .placement-queue > div:not(.hud-label) {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  /* HUD */
+  .battle-hud {
+    padding: 0.5rem 0.75rem;
+    gap: 0.6rem;
+  }
+  .hud-value { font-size: 0.95rem; }
+  .hud-label { font-size: 0.5rem; }
+  .hud-turn-badge {
+    font-size: 0.55rem;
+    padding: 0.3rem 0.6rem;
+    margin-left: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Grids stack */
+  .battle-grids { gap: 0.75rem; }
+  .battle-grid-wrap { min-width: unset; width: 100%; }
+
+  /* Bottom: log takes full width, fleets hidden on mobile */
+  .battle-bottom { flex-direction: column; gap: 0.5rem; }
+  .battle-log {
+    max-height: 130px;
+    min-width: unset;
+    width: 100%;
+    font-size: 0.62rem;
+  }
+
+  /* Game over */
+  .gameover-panel { padding: 1.5rem 1rem; gap: 1rem; }
+  .gameover-badge { font-size: 1.8rem; }
+  .gameover-title { font-size: 0.75rem; letter-spacing: 0.15em; }
+  .gameover-stats { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+  .gameover-stat-val { font-size: 1rem; }
+
+  /* Placement controls */
+  .placement-controls { gap: 0.4rem; }
+  .placement-controls .btn { font-size: 0.6rem; padding: 0.5rem 0.8rem; }
+}
+
+@media (max-width: 480px) {
+  .battle-hud { gap: 0.5rem; padding: 0.4rem 0.6rem; }
+  .hud-stat { flex-direction: row; align-items: center; gap: 0.3rem; }
+  .hud-value { font-size: 0.85rem; }
+  .gameover-stats { grid-template-columns: repeat(2, 1fr); }
+  .gameover-badge { font-size: 1.5rem; }
+}
+
+
+/* ── Placement ───────────────────────────────────────────────────── */
+.placement-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+}
+.placement-header { text-align: center; }
+.phase-title {
+  font-family: var(--font-hud);
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  color: var(--green);
+}
+.phase-sub {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 0.3rem;
+  letter-spacing: 0.05em;
+}
+.placement-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+.placement-main {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Ship queue */
+.placement-queue {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  min-width: 180px;
+}
+.queue-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.7rem;
+  border: 1px solid transparent;
+  margin-bottom: 0.3rem;
+  transition: all 0.15s;
+}
+.queue-current { border-color: var(--green); color: var(--green); background: #001a00; }
+.queue-done    { color: var(--text-dim); opacity: 0.6; }
+.queue-pending { color: var(--text-dim); }
+.queue-size    { margin-left: auto; font-family: var(--font-hud); font-size: 0.65rem; color: var(--text-dim); }
+.queue-check   { color: var(--green); font-weight: 900; }
+
+/* ── Battle ──────────────────────────────────────────────────────── */
+.battle-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* HUD bar */
+.battle-hud {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 0.75rem 1.25rem;
+  flex-wrap: wrap;
+}
+.hud-stat { display: flex; flex-direction: column; gap: 0.1rem; }
+.hud-value {
+  font-family: var(--font-hud);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1;
+}
+.hud-turn-badge {
+  margin-left: auto;
+  font-family: var(--font-hud);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.turn-player { color: var(--green); border-color: var(--green); }
+.turn-ai     { color: var(--red);   border-color: var(--red);   }
+
+/* Grids row */
+.battle-grids {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.battle-grid-wrap { flex: 1; min-width: 300px; display: flex; justify-content: center; }
+
+/* Bottom row */
+.battle-bottom {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Battle log */
+.battle-log {
+  flex: 1;
+  min-width: 220px;
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 0.75rem;
+  font-size: 0.7rem;
+  line-height: 1.7;
+}
+.log-entry { padding: 0.1rem 0; }
+.log-hit        { color: var(--red); }
+.log-miss       { color: #006688; }
+.log-sunk       { color: #ff6600; font-weight: 700; }
+.log-enemy-hit  { color: #ff8800; }
+.log-enemy-sunk { color: #ff0000; font-weight: 700; }
+.log-system     { color: var(--green); }
+.log-info       { color: var(--text-dim); }
+
+/* ── Game Over ───────────────────────────────────────────────────── */
+.gameover-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.88);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
 }
 .gameover-panel {
   background: var(--bg2);

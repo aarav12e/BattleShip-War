@@ -1,29 +1,30 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
+import { Anchor, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './ProfileSetup.css';
 
 export default function ProfileSetup() {
   const { updateProfile } = useAuth();
-
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    if (!age || age < 5 || age > 120) return setError('Enter a valid age (5–120).');
-    if (!gender) return setError('Please select your gender.');
+    if (!age || age < 5 || age > 120) return toast.error('Enter a valid age (5–120)');
+    if (!gender) return toast.error('Please select your gender');
 
     setLoading(true);
     try {
       const result = await updateProfile({ age: Number(age), gender });
       if (!result.success) {
-        setError(result.error);
+        toast.error(result.error || 'Something went wrong. Please try again.');
+      } else {
+        toast.success('Profile saved! Welcome, Commander!');
       }
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      toast.error('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -35,7 +36,7 @@ export default function ProfileSetup() {
 
         {/* Header */}
         <div className="setup-header">
-          <div className="setup-anchor">⚓</div>
+          <Anchor size={36} style={{ color: '#00ff41', filter: 'drop-shadow(0 0 8px #00ff41)', marginBottom: '0.5rem' }} />
           <h1 className="setup-title glow">COMMANDER PROFILE</h1>
           <p className="setup-sub">COMPLETE YOUR NAVAL IDENTITY</p>
         </div>
@@ -49,24 +50,17 @@ export default function ProfileSetup() {
           {/* Age */}
           <div className="setup-field">
             <label className="setup-label" htmlFor="setup-age">
-              📅 AGE <span className="setup-required">*</span>
+              AGE <span className="setup-required">*</span>
             </label>
-            <input
-              id="setup-age"
-              className="setup-input"
-              type="number"
-              placeholder="Your age"
-              value={age}
-              onChange={e => setAge(e.target.value)}
-              min={5}
-              max={120}
-            />
+            <input id="setup-age" className="setup-input" type="number"
+              placeholder="Your age" value={age}
+              onChange={e => setAge(e.target.value)} min={5} max={120} />
           </div>
 
           {/* Gender */}
           <div className="setup-field">
             <label className="setup-label">
-              ⚡ GENDER <span className="setup-required">*</span>
+              GENDER <span className="setup-required">*</span>
             </label>
             <div className="setup-gender-group">
               {[
@@ -74,37 +68,26 @@ export default function ProfileSetup() {
                 { value: 'female', label: '♀ FEMALE' },
                 { value: 'other',  label: '◈ OTHER' },
               ].map(opt => (
-                <button
-                  key={opt.value}
-                  type="button"
+                <button key={opt.value} type="button"
                   className={`setup-gender-btn ${gender === opt.value ? 'selected' : ''}`}
-                  onClick={() => setGender(opt.value)}
-                >
+                  onClick={() => setGender(opt.value)}>
                   {opt.label}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Error */}
-          {error && <div className="setup-error">⚠ {error}</div>}
-
           {/* Submit */}
-          <button
-            className="setup-submit-btn"
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? (
-              <span className="setup-spinner" />
-            ) : (
-              '⚔ ENLIST AS COMMANDER'
-            )}
+          <button className="setup-submit-btn" type="submit" disabled={loading}>
+            {loading
+              ? <span className="setup-spinner" />
+              : <><ShieldCheck size={16} style={{ marginRight: '0.4rem' }} />ENLIST AS COMMANDER</>
+            }
           </button>
         </form>
 
         <div className="setup-footer">
-          <span className="pulse" style={{ color:'#00ff41' }}>●</span>
+          <span className="pulse" style={{ color: '#00ff41' }}>●</span>
           &nbsp; PROFILE SAVED PERMANENTLY · LOGIN REMEMBERS YOU
         </div>
       </div>

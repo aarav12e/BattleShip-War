@@ -238,3 +238,38 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* ── Spinner (inline loading) ── */
+.login-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0,0,0,0.2);
+  border-top: 2px solid var(--bg);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Footer ── */
+.login-footer {
+  text-align: center;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  margin-top: 0.25rem;
+}
+
+/* ── Navbar icon alignment ── */
+.navbar-anchor-icon {
+  color: var(--green);
+  filter: drop-shadow(0 0 5px var(--green));
+  flex-shrink: 0;
+}
+
+/* ── Theme label hide on tiny screens ── */
+@media (max-width: 360px) {
+  .theme-label-text { display: none; }
+}
+

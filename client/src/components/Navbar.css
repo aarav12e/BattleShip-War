@@ -1,64 +1,154 @@
+/* ── Navbar base ─────────────────────────────────────────────────── */
 .navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.6rem 1.5rem;
-  background: rgba(6,11,20,0.97);
+  padding: 0 1.25rem;
+  height: 52px;
+  background: rgba(6,11,20,0.98);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 20px #00ff410a;
-  flex-wrap: wrap;
+  z-index: 200;
+  box-shadow: 0 2px 20px #00000066;
   gap: 0.5rem;
 }
 
+/* Brand */
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   text-decoration: none;
+  flex-shrink: 0;
 }
-.navbar-anchor { font-size: 1.2rem; filter: drop-shadow(0 0 5px #00ff41); }
+.navbar-anchor-icon {
+  color: var(--green);
+  filter: drop-shadow(0 0 5px var(--green));
+  flex-shrink: 0;
+}
 .navbar-title {
   font-family: var(--font-hud);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 900;
   color: var(--green);
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
 }
 
+/* Nav links — desktop */
 .navbar-links {
   display: flex;
-  gap: 0.25rem;
+  gap: 0.15rem;
+  align-items: center;
 }
 .nav-link {
   font-family: var(--font-hud);
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
   color: var(--text-dim);
   text-decoration: none;
-  padding: 0.35rem 0.75rem;
+  padding: 0.35rem 0.7rem;
   border: 1px solid transparent;
   transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
 }
-.nav-link:hover  { color: var(--green); border-color: var(--border); }
-.nav-active      { color: var(--green); border-color: var(--green); text-shadow: var(--glow); }
+.nav-link:hover { color: var(--green); border-color: var(--border); }
+.nav-active     { color: var(--green); border-color: var(--green); text-shadow: var(--glow); }
 
+/* Right side */
 .navbar-user {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 .navbar-avatar {
-  width: 28px; height: 28px;
+  width: 26px; height: 26px;
   border-radius: 50%;
   border: 1px solid var(--green-dim);
 }
 .navbar-username {
   font-family: var(--font-hud);
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   letter-spacing: 0.1em;
   color: var(--text);
+  white-space: nowrap;
 }
-.navbar-logout { font-size: 0.55rem; padding: 0.3rem 0.7rem; }
+.navbar-logout {
+  font-size: 0.5rem;
+  padding: 0.3rem 0.55rem;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  min-height: 30px;
+}
+
+/* ── Tablet (768px) ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .navbar-username { display: none; }
+  .navbar-title { font-size: 0.75rem; letter-spacing: 0.08em; }
+  .nav-link { padding: 0.35rem 0.55rem; font-size: 0.52rem; letter-spacing: 0.1em; }
+}
+
+/* ── Mobile (520px and below) ────────────────────────────────────── */
+/* Two-row layout: brand + controls on top, nav tabs on bottom */
+@media (max-width: 520px) {
+  .navbar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 0.45rem 0.75rem 0;
+    gap: 0;
+  }
+
+  /* Row 1: brand left, user controls right */
+  .navbar-brand {
+    flex: 1;
+    min-width: 0;
+  }
+  .navbar-title { font-size: 0.7rem; letter-spacing: 0.06em; }
+  .navbar-user {
+    gap: 0.35rem;
+    padding-bottom: 0.45rem;
+  }
+
+  /* Row 2: nav links span full width, centered, tab-bar style */
+  .navbar-links {
+    order: 3;            /* push to second row */
+    width: 100%;
+    justify-content: stretch;
+    border-top: 1px solid var(--border);
+    gap: 0;
+    margin: 0 -0.75rem;  /* bleed to edges */
+    width: calc(100% + 1.5rem);
+  }
+  .nav-link {
+    flex: 1;
+    justify-content: center;
+    font-size: 0.48rem;
+    letter-spacing: 0.08em;
+    padding: 0.5rem 0.25rem;
+    border: none;
+    border-top: 2px solid transparent;
+    border-radius: 0;
+    gap: 0.2rem;
+  }
+  .nav-link:hover { border-color: var(--border); background: none; }
+  .nav-active {
+    border-top-color: var(--green);
+    color: var(--green);
+    background: rgba(0,255,65,0.05);
+    box-shadow: none;
+  }
+  .navbar-logout { min-height: 28px; padding: 0.25rem 0.45rem; }
+  .navbar-avatar { width: 22px; height: 22px; }
+}
+
+/* ── Very small (360px) ──────────────────────────────────────────── */
+@media (max-width: 360px) {
+  .navbar-title { display: none; }
+  .theme-label-text { display: none; }
+}

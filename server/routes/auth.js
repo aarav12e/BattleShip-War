@@ -36,20 +36,23 @@ router.post('/signup', async (req, res) => {
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    const existingUser = await User.findOne({ $or: [{ email: email.trim().toLowerCase() }, { username: username.trim() }] });
     if (existingUser) {
-      return res.status(409).json({ error: 'User with this email or username already exists' });
+      if (existingUser.email === email.trim().toLowerCase()) {
+        return res.status(409).json({ error: 'An account with this email already exists' });
+      }
+      return res.status(409).json({ error: 'This username is already taken' });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    // Hash password — rounds=10 is fast enough and safe (12 can timeout on free-tier hosts)
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
     const user = new User({
       username: username.trim(),
       email: email.trim().toLowerCase(),
       password: hashedPassword,
-      name: username.trim(), // Use username as name initially
+      name: username.trim(),
     });
 
     await user.save();
@@ -60,9 +63,15 @@ router.post('/signup', async (req, res) => {
     res.status(201).json({ user: formatUser(user), token });
   } catch (err) {
     console.error('Signup error:', err.message);
-    res.status(500).json({ error: 'Internal server error' });
+    // Handle MongoDB duplicate key race condition
+    if (err.code === 11000) {
+      const field = Object.keys(err.keyPattern || {})[0];
+      return res.status(409).json({ error: `This ${field} is already registered` });
+    }
+    res.status(500).json({ error: 'Server error during signup. Please try again.' });
   }
 });
+
 
 // ── Login ─────────────────────────────────────────────────────────────────────
 router.post('/login', async (req, res) => {

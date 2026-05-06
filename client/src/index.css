@@ -1,3 +1,6 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
 /* ── Variables ──────────────────────────────────────────────────── */
 :root {
   --bg:         #060b14;
@@ -134,3 +137,30 @@ body::before {
 }
 .fade-in { animation: fadeIn 0.4s ease both; }
 .pulse   { animation: pulse 1.5s ease-in-out infinite; }
+
+/* ── Mobile globals ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Bigger touch targets for all buttons */
+  .btn {
+    min-height: 40px;
+    padding: 0.6rem 1rem;
+    font-size: 0.65rem;
+  }
+
+  /* Prevent double-tap zoom on interactive elements */
+  button, a {
+    touch-action: manipulation;
+  }
+
+  /* Prevent text selection on game grid taps */
+  .grid-wrapper {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn { font-size: 0.6rem; padding: 0.55rem 0.85rem; min-height: 38px; }
+  .hud-label { font-size: 0.48rem; letter-spacing: 0.15em; }
+}
+
