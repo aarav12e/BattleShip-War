@@ -6,6 +6,8 @@ const userSchema = new mongoose.Schema({
   password:        { type: String, required: true },
   name:            { type: String, default: '' },
   picture:         { type: String, default: '' },
+  // googleId: sparse=true means multiple documents with no googleId won't clash
+  googleId:        { type: String, default: null, sparse: true },
   // Profile setup fields (filled on first sign-up)
   age:             { type: Number, default: null },
   gender:          { type: String, enum: ['male', 'female', 'other', ''], default: '' },
@@ -19,3 +21,4 @@ const userSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('User', userSchema);
+
